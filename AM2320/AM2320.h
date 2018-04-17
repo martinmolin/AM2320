@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define ADDRESS (0xB8 >> 1)
+#define ADDRESS 0x5C
 
 class AM2320
 {
@@ -15,6 +15,7 @@ class AM2320
   private:
     float _temperature;
     float _humidity;
+    byte _buf[8];
 
     void Wake();
     bool Prepare();

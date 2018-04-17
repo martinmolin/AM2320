@@ -3,7 +3,7 @@
 
 AM2320::AM2320()
 {
-  
+
 }
 
 int AM2320::Read()
@@ -16,22 +16,20 @@ int AM2320::Read()
   delayMicroseconds(1550); //Wait for > 1500us
 
   Wire.requestFrom(ADDRESS, 8);
-  byte buf[8];
-  memset(buf,0,8); 
-    
-  for (int i = 0; i < 8; i++)
-    buf[i] = Wire.read();
+  memset(_buf, 0, 8);
+  for (byte i = 0; i < 8; i++)
+    _buf[i] = Wire.read();
 
-  unsigned int crc = buf[7] << 8;
-  crc += buf[6];
+  unsigned int crc = _buf[7] << 8;
+  crc += _buf[6];
   
-  if (crc != CRC16(buf, 6))
+  if (crc != CRC16(_buf, 6))
     return 2; //CRC Check failed
 
-  unsigned int humidity = (buf[2] << 8) + buf[3];
+  unsigned int humidity = (_buf[2] << 8) + _buf[3];
   _humidity = humidity / 10.0;
   
-  unsigned int temperature = ((buf[4] & 0x7F) << 8) + buf[5];
+  unsigned int temperature = ((_buf[4] & 0x7F) << 8) + _buf[5];
   _temperature = temperature / 10.0;
   
   return 0;
@@ -40,7 +38,6 @@ int AM2320::Read()
 void AM2320::Wake()
 {
   Wire.beginTransmission(ADDRESS);
-  //delayMicroseconds(850); //Wait for > 800us
   Wire.endTransmission();
 }
 
@@ -50,9 +47,7 @@ bool AM2320::Prepare()
   Wire.write(0x03); //Function code - Read Register Data
   Wire.write(0x00); //Start address
   Wire.write(0x04); //Bytes to read
-  byte result = Wire.endTransmission(true);
-  Serial.println(result);
-  return result == 0;
+  return Wire.endTransmission(true) == 0;
 }
 
 float AM2320::Humidity()
